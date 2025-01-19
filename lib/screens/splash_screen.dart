@@ -1,10 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gallery_app/screens/permission_screen.dart';
+import 'package:gallery_app/screens/photos_screen.dart';
+import '../provider/splash_screen_provider.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends ConsumerStatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      // Initialize the app, simulate loading or setup tasks
+      await ref.read(splashScreenProvider).initializeApp();
+
+      // After initialization, navigate to the PhotosScreen
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => PhotosScreen()),
+        );
+      }
+    } catch (e) {
+      // Handle any initialization errors
+      print("Error during initialization: $e");
+
+      // Navigate to PermissionScreen in case of error
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => PermissionScreen()),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set your desired background color
+      backgroundColor: Colors.white, // Set the background color
       body: Center(
         child: Image.asset(
           'assets/images/splash.png', // Path to your logo image
