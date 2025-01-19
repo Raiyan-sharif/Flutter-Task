@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:gallery_app/screens/album_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PermissionScreen extends StatelessWidget {
   @override
@@ -73,7 +75,23 @@ class PermissionScreen extends StatelessWidget {
     );
   }
 
-  void _requestPermissions(BuildContext context) {
-
+  void _requestPermissions(BuildContext context) async {
+    final status = await Permission.storage.request();
+    if (status.isGranted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AlbumScreen(),
+        ),
+      );
+      // Navigate to the next screen
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Permissions denied!'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
   }

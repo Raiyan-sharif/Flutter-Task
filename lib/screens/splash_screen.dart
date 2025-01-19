@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gallery_app/screens/permission_screen.dart';
-import 'package:gallery_app/screens/photos_screen.dart';
 import '../provider/splash_screen_provider.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -23,11 +22,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
       // After initialization, navigate to the PhotosScreen
       if (mounted) {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => PhotosScreen()),
+          MaterialPageRoute(builder: (context) => PermissionScreen()),
+              (_) => false, // This removes all previous routes
         );
       }
+
     } catch (e) {
       // Handle any initialization errors
       print("Error during initialization: $e");

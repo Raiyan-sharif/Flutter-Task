@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gallery_app/screens/album_screen.dart';
-import 'package:gallery_app/screens/permission_screen.dart';
 import 'package:gallery_app/screens/splash_screen.dart';
-
-import 'screens/photos_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));

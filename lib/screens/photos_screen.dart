@@ -1,51 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'full_screen_photos.dart';
 
-class PhotosScreen extends StatelessWidget {
-  // Sample photo data
-  final List<String> photos = [
-    'assets/images/all.jpeg',
-    'assets/images/building.jpeg',
-    'assets/images/game.jpeg',
-    'assets/images/people.jpeg',
-    'assets/images/recent.jpeg',
-    'assets/images/all.jpeg',
-    'assets/images/building.jpeg',
-    'assets/images/game.jpeg',
-    'assets/images/people.jpeg',
-    'assets/images/recent.jpeg',
-  ];
+class PhotosScreen extends StatefulWidget {
+  final Map<String, dynamic> album;
+
+  PhotosScreen({required this.album});
+
+  @override
+  State<PhotosScreen> createState() => _PhotosScreenState();
+}
+
+class _PhotosScreenState extends State<PhotosScreen> {
+  static const platform = MethodChannel('com.example.galleryApp/photos');
+
+  List<String> photos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPhotos();
+  }
+
+  Future<void> _fetchPhotos() async {
+    try {
+      final List<dynamic> result = await platform.invokeMethod(
+        'getPhotos',
+        {'albumId': widget.album['id']},
+      );
+      setState(() {
+        photos = result.cast<String>();
+      });
+    } on PlatformException catch (e) {
+      print("Failed to fetch photos: '${e.message}'.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            // Navigate back
-            Navigator.pop(context);
-          },
-        ),
-        title: Text('Photos'),
+        title: Text(widget.album['name']),
       ),
-      body: GridView.builder(
+      body: photos.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : GridView.builder(
         padding: EdgeInsets.all(10),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4, // Number of photos in each row
-          crossAxisSpacing: 5, // Spacing between columns
-          mainAxisSpacing: 5, // Spacing between rows
+          crossAxisCount: 4,
+          crossAxisSpacing: 5,
+          mainAxisSpacing: 5,
         ),
         itemCount: photos.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
-              // Navigate to the full-screen photo viewer
+              // Navigate to FullScreenPhotoScreen
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FullScreenPhotoScreen(image: photos[index]),
+                  builder: (context) => FullScreenPhotoScreen(
+                    image: photos[index],
+                  ),
                 ),
               );
             },
